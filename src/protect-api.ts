@@ -584,6 +584,15 @@ export class ProtectApi {
   }
 
   // Utility to let us streamline error handling and return checking from the Protect API.
+  public async loginFetch(url: RequestInfo, options: RequestInit = { method: "GET" }, logErrors = true, decodeResponse = true): Promise<Response | null> {
+    if(!(await this.login())) {
+      return null;
+    }
+
+    return this.fetch(url, options, logErrors, decodeResponse);
+  }
+
+  // Utility to let us streamline error handling and return checking from the Protect API.
   public async fetch(url: RequestInfo, options: RequestInit = { method: "GET" }, logErrors = true, decodeResponse = true): Promise<Response | null> {
     let response: Response;
 
