@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "abort-controller": "^3.0.0",
+    "node-fetch": "^3.0.0-beta.10",
+    "ws": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.7.1",
+    "@types/ws": "^7.4.7"
+  }
+}
