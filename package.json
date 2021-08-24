@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc src/index.ts --outDir dist --sourceMap"
   },
+  "main": "dist/index.js",
   "dependencies": {
     "abort-controller": "^3.0.0",
     "node-fetch": "^3.0.0-beta.10",
