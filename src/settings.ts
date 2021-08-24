@@ -16,8 +16,5 @@ export const PROTECT_API_TIMEOUT = 3.5;
 // UniFi OS expects to hear from us every 15 seconds.
 export const PROTECT_EVENTS_HEARTBEAT_INTERVAL = 10;
 
-// FFmpeg highpass audio filter defaults - this setting attenuates (eliminates) frequencies below the value.
-export const PROTECT_FFMPEG_AUDIO_FILTER_HIGHPASS = 200;
-
 // How often, in seconds, should we refresh our Protect login credentials.
 export const PROTECT_LOGIN_REFRESH_INTERVAL = 1800;

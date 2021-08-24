@@ -26,6 +26,5 @@ export interface Logging {
     warn(message: string, ...parameters: any[]): void;
     error(message: string, ...parameters: any[]): void;
     debug(message: string, ...parameters: any[]): void;
-    log(level: LogLevel, message: string, ...parameters: any[]): void;
 
 }

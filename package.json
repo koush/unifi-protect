@@ -2,7 +2,13 @@
   "name": "unifi-protect",
   "description": "Unifi Protect API",
   "scripts": {
-    "build": "tsc src/index.ts --outDir dist --sourceMap"
+    "build": "rimraf ./dist && tsc",
+    "clean": "rimraf ./dist",
+    "lint": "eslint src/**.ts",
+    "postpublish": "npm run clean",
+    "prepublishOnly": "npm run lint && npm run build",
+    "test": "eslint src/**.ts",
+    "watch": "npm run build && npm link && nodemon"
   },
   "main": "dist/index.js",
   "dependencies": {
