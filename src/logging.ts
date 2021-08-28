@@ -4,9 +4,13 @@
  */
 export interface Logging {
 
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     info(message: string, ...parameters: any[]): void;
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     warn(message: string, ...parameters: any[]): void;
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     error(message: string, ...parameters: any[]): void;
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     debug(message: string, ...parameters: any[]): void;
 
 }

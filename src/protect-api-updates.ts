@@ -2,9 +2,9 @@
  *
  * protect-api-updates.ts: Our UniFi Protect realtime updates event API implementation.
  */
+import { Logging } from "./logging";
 import { ProtectCameraLcdMessagePayload } from "./protect-types";
 import zlib from "zlib";
-import { Logging } from "./logging";
 
 /*
  * The UniFi Protect realtime updates API is largely undocumented and has been reverse engineered mostly through
@@ -182,7 +182,6 @@ export class ProtectApiUpdates {
   // Decode a frame, composed of a header and payload, received through the update events API.
   private static decodeUpdateFrame(log: Logging, packet: Buffer, packetType: number): ProtectNvrUpdateEventAction | Record<string, unknown> | string | Buffer | null {
 
-    console
     // Read the packet frame type.
     const frameType = packet.readUInt8(UpdatePacketHeader.TYPE);
 
