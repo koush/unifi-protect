@@ -76,7 +76,7 @@ export class ProtectApi {
 
     // We only need to acquire a token if we aren't already logged in, or we don't already have a token,
     // or don't know which device type we're on.
-    if(this.loggedIn || this.headers.has("X-CSRF-Token") || this.headers.has("Authorization")) {
+    if (this.loggedIn || this.headers.has("X-CSRF-Token") || this.headers.has("Authorization")) {
       return true;
     }
 
@@ -85,11 +85,11 @@ export class ProtectApi {
     // and see ifing there's a CSRF token waiting for us.
     const response = await this.fetch("https://" + this.nvrAddress, { method: "GET" }, false);
 
-    if(response?.ok) {
+    if (response?.ok) {
       const csrfToken = response.headers.get("X-CSRF-Token");
 
       // We found a token.
-      if(csrfToken) {
+      if (csrfToken) {
         this.headers.set("X-CSRF-Token", csrfToken);
 
         // UniFi OS has support for keepalive. Let's take advantage of that and reduce the workload on controllers.
@@ -107,19 +107,19 @@ export class ProtectApi {
     const now = Date.now();
 
     // Is it time to renew our credentials?
-    if(now > (this.loginAge + (PROTECT_LOGIN_REFRESH_INTERVAL * 1000))) {
+    if (now > (this.loginAge + (PROTECT_LOGIN_REFRESH_INTERVAL * 1000))) {
       this.loggedIn = false;
       this.headers = new Headers();
       this.headers.set("Content-Type", "application/json");
     }
 
     // If we're already logged in, and it's not time to renew our credentials, we're done.
-    if(this.loggedIn) {
+    if (this.loggedIn) {
       return true;
     }
 
     // Make sure we have a token, or get one if needed.
-    if(!(await this.acquireToken())) {
+    if (!(await this.acquireToken())) {
       return false;
     }
 
@@ -129,7 +129,7 @@ export class ProtectApi {
       method: "POST"
     });
 
-    if(!response?.ok) {
+    if (!response?.ok) {
       return false;
     }
 
@@ -141,7 +141,7 @@ export class ProtectApi {
     const csrfToken = response.headers.get("X-CSRF-Token");
     const cookie = response.headers.get("Set-Cookie");
 
-    if(csrfToken && cookie && this.headers.has("X-CSRF-Token")) {
+    if (csrfToken && cookie && this.headers.has("X-CSRF-Token")) {
 
       this.headers.set("Cookie", cookie);
       this.headers.set("X-CSRF-Token", csrfToken);
@@ -157,13 +157,13 @@ export class ProtectApi {
   // Get our UniFi Protect NVR configuration.
   private async bootstrapProtect(): Promise<boolean> {
     // Log us in if needed.
-    if(!(await this.login())) {
+    if (!(await this.login())) {
       return false;
     }
 
     const response = await this.fetch(this.bootstrapUrl(), { method: "GET" });
 
-    if(!response?.ok) {
+    if (!response?.ok) {
       this.log.error("%s: Unable to retrieve NVR configuration information from UniFi Protect. Will retry again later.",
         this.getNvrName());
 
@@ -177,13 +177,13 @@ export class ProtectApi {
 
     try {
       data = await response.json() as ProtectNvrBootstrap;
-    } catch(error) {
+    } catch (error) {
       data = null;
       this.log.error("%s: Unable to parse response from UniFi Protect. Will retry again later.", this.getNvrName());
     }
 
     // No camera information returned.
-    if(!data?.cameras) {
+    if (!data?.cameras) {
       this.log.error("%s: Unable to retrieve camera information from UniFi Protect. Will retry again later.", this.getNvrName());
 
       // Clear out our login credentials and reset for another try.
@@ -195,7 +195,7 @@ export class ProtectApi {
     const firstRun = this.bootstrap ? false : true;
     this.bootstrap = data;
 
-    if(firstRun) {
+    if (firstRun) {
       this.log.info("%s: Connected to the Protect controller API (address: %s mac: %s).", this.getNvrName(), data.nvr.host, data.nvr.mac);
     }
 
@@ -213,12 +213,12 @@ export class ProtectApi {
   private async launchUpdatesListener(): Promise<boolean> {
 
     // Log us in if needed.
-    if(!(await this.login())) {
+    if (!(await this.login())) {
       return false;
     }
 
     // If we already have a listener, we're already all set.
-    if(this.eventListener) {
+    if (this.eventListener) {
       return true;
     }
 
@@ -234,7 +234,7 @@ export class ProtectApi {
         rejectUnauthorized: false
       });
 
-      if(!ws) {
+      if (!ws) {
         this.log.error("Unable to connect to the realtime update events API. Will retry again later.");
         this.eventListener = null;
         this.eventListenerConfigured = false;
@@ -256,7 +256,7 @@ export class ProtectApi {
       this.eventListener.on("error", (error) => {
 
         // If we're closing before fully established it's because we're shutting down the API - ignore it.
-        if(error.message !== "WebSocket was closed before the connection was established") {
+        if (error.message !== "WebSocket was closed before the connection was established") {
           this.log.error("%s: %s", this.getNvrName(), error);
         }
 
@@ -267,7 +267,7 @@ export class ProtectApi {
       });
 
       this.log.info("%s: Connected to the UniFi realtime update events API.", this.getNvrName());
-    } catch(error) {
+    } catch (error) {
       this.log.error("%s: Error connecting to the realtime update events API: %s", this.getNvrName(), error);
     }
 
@@ -277,7 +277,7 @@ export class ProtectApi {
   // Get the list of UniFi Protect devices associated with a NVR.
   public async refreshDevices(): Promise<boolean> {
     // Refresh the configuration from the NVR.
-    if(!(await this.bootstrapProtect())) {
+    if (!(await this.bootstrapProtect())) {
       return false;
     }
 
@@ -286,15 +286,15 @@ export class ProtectApi {
     const newDeviceList: ProtectCameraConfig[] | undefined = this.bootstrap?.cameras;
 
     // Notify the user about any new devices that we've discovered.
-    if(newDeviceList) {
-      for(const newDevice of newDeviceList) {
+    if (newDeviceList) {
+      for (const newDevice of newDeviceList) {
         // We already know about this device.
-        if(this.Cameras?.some((x: ProtectCameraConfig) => x.mac === newDevice.mac)) {
+        if (this.Cameras?.some((x: ProtectCameraConfig) => x.mac === newDevice.mac)) {
           continue;
         }
 
         // We only want to discover managed devices.
-        if(!newDevice.isManaged) {
+        if (!newDevice.isManaged) {
           continue;
         }
 
@@ -307,11 +307,11 @@ export class ProtectApi {
     }
 
     // Notify the user about any devices that have disappeared.
-    if(this.Cameras) {
-      for(const existingDevice of this.Cameras) {
+    if (this.Cameras) {
+      for (const existingDevice of this.Cameras) {
 
         // This device still is visible.
-        if(newDeviceList?.some((x: ProtectCameraConfig) => x.mac === existingDevice.mac)) {
+        if (newDeviceList?.some((x: ProtectCameraConfig) => x.mac === existingDevice.mac)) {
           continue;
         }
 
@@ -336,7 +336,7 @@ export class ProtectApi {
 
   // Check admin privileges.
   private checkAdminUserStatus(firstRun = false): boolean {
-    if(!this.bootstrap?.users) {
+    if (!this.bootstrap?.users) {
       return false;
     }
 
@@ -346,18 +346,18 @@ export class ProtectApi {
     // Find this user.
     const user = this.bootstrap?.users.find((x: ProtectNvrUserConfig) => x.id === this.bootstrap?.authUserId);
 
-    if(!user?.allPermissions) {
+    if (!user?.allPermissions) {
       return false;
     }
 
     // Let's figure out this user's permissions.
     let newAdminStatus = false;
-    for(const entry of user.allPermissions) {
+    for (const entry of user.allPermissions) {
       // Each permission line exists as: permissiontype:permissions:scope.
       const permType = entry.split(":");
 
       // We only care about camera permissions.
-      if(permType[0] !== "camera") {
+      if (permType[0] !== "camera") {
         continue;
       }
 
@@ -365,7 +365,7 @@ export class ProtectApi {
       const permissions = permType[1].split(",");
 
       // We found our administrative privileges - we're done.
-      if(permissions.indexOf("write") !== -1) {
+      if (permissions.indexOf("write") !== -1) {
         newAdminStatus = true;
         break;
       }
@@ -374,10 +374,10 @@ export class ProtectApi {
     this.isAdminUser = newAdminStatus;
 
     // Only admin users can activate RTSP streams. Inform the user on startup, or if we detect a role change.
-    if(firstRun && !this.isAdminUser) {
+    if (firstRun && !this.isAdminUser) {
       this.log.info("%s: The user '%s' requires the Administrator role in order to automatically configure camera RTSP streams.",
         this.getNvrName(), this.username);
-    } else if(!firstRun && (oldAdminStatus !== this.isAdminUser)) {
+    } else if (!firstRun && (oldAdminStatus !== this.isAdminUser)) {
       this.log.info("%s: Detected a role change for user '%s': the Administrator role has been %s.",
         this.getNvrName(), this.username, this.isAdminUser ? "enabled" : "disabled");
     }
@@ -385,33 +385,30 @@ export class ProtectApi {
     return true;
   }
 
-  // Enable RTSP stream support on an attached Protect device.
-  public async enableRtsp(device: ProtectCameraConfigInterface): Promise<ProtectCameraConfig | null> {
+  private async checkCameraState(device: ProtectCameraConfigInterface): Promise<boolean> {
     // Log us in if needed.
-    if(!(await this.login())) {
-      return null;
+    if (!(await this.login())) {
+      return false;
     }
 
     // Only admin users can activate RTSP streams.
-    if(!this.isAdminUser) {
-      return null;
+    if (!this.isAdminUser) {
+      return false;
     }
 
     // At the moment, we only know about camera devices.
-    if(device.modelKey !== "camera") {
+    if (device.modelKey !== "camera") {
+      return false;
+    }
+
+    return true;
+  }
+
+  // Enable RTSP stream support on an attached Protect device.
+  public async updateChannels(device: ProtectCameraConfigInterface): Promise<ProtectCameraConfig | null> {
+    if (!(await this.checkCameraState(device))) {
       return null;
     }
-
-    // Do we have any non-RTSP enabled channels? If not, we're done.
-    if(!device.channels?.some(channel => !channel.isRtspEnabled)) {
-      return device;
-    }
-
-    // Enable RTSP on all available channels.
-    device.channels = device.channels.map((channel: ProtectCameraChannelConfigInterface) => {
-      channel.isRtspEnabled = true;
-      return channel;
-    });
 
     // Update Protect with the new configuration.
     const response = await this.fetch(this.camerasUrl() + "/" + device.id, {
@@ -421,10 +418,10 @@ export class ProtectApi {
 
     // Since we took responsibility for interpreting the outcome of the fetch, we need to check for
     // errors for ourself.
-    if(!response || !response?.ok) {
+    if (!response || !response?.ok) {
       this.apiErrorCount++;
 
-      if(response?.status === 403) {
+      if (response?.status === 403) {
         this.log.error("%s: Insufficient privileges to enable RTSP on all channels. Please ensure this username has the Administrator role assigned in UniFi Protect.",
           this.getFullName(device));
       } else {
@@ -443,21 +440,41 @@ export class ProtectApi {
     return await response.json() as ProtectCameraConfig;
   }
 
+  // Enable RTSP stream support on an attached Protect device.
+  public async enableRtsp(device: ProtectCameraConfigInterface): Promise<ProtectCameraConfig | null> {
+    if (!(await this.checkCameraState(device))) {
+      return null;
+    }
+
+    // Do we have any non-RTSP enabled channels? If not, we're done.
+    if (!device.channels?.some(channel => !channel.isRtspEnabled)) {
+      return device;
+    }
+
+    // Enable RTSP on all available channels.
+    device.channels = device.channels.map((channel: ProtectCameraChannelConfigInterface) => {
+      channel.isRtspEnabled = true;
+      return channel;
+    });
+
+    return this.updateChannels(device);
+  }
+
   // Update a camera object.
   public async updateCamera(device: ProtectCameraConfig, payload: ProtectCameraConfigPayload): Promise<ProtectCameraConfig | null> {
 
     // No device object, we're done.
-    if(!device) {
+    if (!device) {
       return null;
     }
 
     // Log us in if needed.
-    if(!(await this.login())) {
+    if (!(await this.login())) {
       return null;
     }
 
     // Only admin users can show messages on doorbells.
-    if(!this.isAdminUser) {
+    if (!this.isAdminUser) {
       return null;
     }
 
@@ -469,7 +486,7 @@ export class ProtectApi {
       method: "PATCH"
     });
 
-    if(!response?.ok) {
+    if (!response?.ok) {
       this.log.error("%s: Unable to configure the camera: %s.", this.getFullName(device), response?.status);
       return null;
     }
@@ -484,7 +501,7 @@ export class ProtectApi {
     // Our NVR string, if it exists, appears as:
     // NVR [NVR Type].
     // Otherwise, we appear as NVRaddress.
-    if(this.bootstrap?.nvr) {
+    if (this.bootstrap?.nvr) {
       return this.bootstrap.nvr.name + " [" + this.bootstrap.nvr.type + "]";
     } else {
       return this.nvrAddress;
@@ -495,7 +512,7 @@ export class ProtectApi {
   public getDeviceName(camera: ProtectCameraConfig, name = camera?.name, cameraInfo = false): string {
 
     // Validate our inputs.
-    if(!camera) {
+    if (!camera) {
       return "";
     }
 
@@ -585,7 +602,7 @@ export class ProtectApi {
 
   // Utility to let us streamline error handling and return checking from the Protect API.
   public async loginFetch(url: RequestInfo, options: RequestInit = { method: "GET" }, logErrors = true, decodeResponse = true): Promise<Response | null> {
-    if(!(await this.login())) {
+    if (!(await this.login())) {
       return null;
     }
 
@@ -612,10 +629,10 @@ export class ProtectApi {
       const now = Date.now();
 
       // Throttle this after PROTECT_API_ERROR_LIMIT attempts.
-      if(this.apiErrorCount >= PROTECT_API_ERROR_LIMIT) {
+      if (this.apiErrorCount >= PROTECT_API_ERROR_LIMIT) {
 
         // Let the user know we've got an API problem.
-        if(this.apiErrorCount === PROTECT_API_ERROR_LIMIT) {
+        if (this.apiErrorCount === PROTECT_API_ERROR_LIMIT) {
 
           this.log.info("%s: Throttling API calls due to errors with the %s previous attempts. I'll retry again in %s minutes.",
             this.getNvrName(), this.apiErrorCount, PROTECT_API_RETRY_INTERVAL / 60);
@@ -625,7 +642,7 @@ export class ProtectApi {
         }
 
         // Throttle our API calls.
-        if((this.apiLastSuccess + (PROTECT_API_RETRY_INTERVAL * 1000)) > now) {
+        if ((this.apiLastSuccess + (PROTECT_API_RETRY_INTERVAL * 1000)) > now) {
           return null;
         }
 
@@ -638,26 +655,26 @@ export class ProtectApi {
       response = await fetch(url, options);
 
       // The caller will sort through responses instead of us.
-      if(!decodeResponse) {
+      if (!decodeResponse) {
         return response;
       }
 
       // Bad username and password.
-      if(response.status === 401) {
+      if (response.status === 401) {
         this.log.error("Invalid login credentials given. Please check your login and password.");
         this.apiErrorCount++;
         return null;
       }
 
       // Insufficient privileges.
-      if(response.status === 403) {
+      if (response.status === 403) {
         this.apiErrorCount++;
         this.log.error("Insufficient privileges for this user. Please check the roles assigned to this user and ensure it has sufficient privileges.");
         return null;
       }
 
       // Some other unknown error occurred.
-      if(!response.ok) {
+      if (!response.ok) {
         this.apiErrorCount++;
         this.log.error("API access error: %s - %s", response.status, response.statusText);
         return null;
@@ -667,18 +684,18 @@ export class ProtectApi {
       this.apiErrorCount = 0;
       return response;
 
-    } catch(error) {
+    } catch (error) {
 
       this.apiErrorCount++;
 
-      if(error instanceof AbortError) {
+      if (error instanceof AbortError) {
         this.log.error("%s: Controller API connection terminated because it was taking too long. This error can usually be safely ignored.", this.getNvrName());
         return null;
       }
 
-      if(error instanceof FetchError) {
+      if (error instanceof FetchError) {
 
-        switch(error.code) {
+        switch (error.code) {
           case "ECONNREFUSED":
             this.log.error("%s: Controller API connection refused.", this.getNvrName());
             break;
@@ -693,7 +710,7 @@ export class ProtectApi {
             break;
 
           default:
-            if(logErrors) {
+            if (logErrors) {
               this.log.error(error.message);
             }
         }
