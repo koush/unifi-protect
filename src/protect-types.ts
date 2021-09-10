@@ -161,6 +161,7 @@ export interface ProtectCameraConfigInterface {
   host: string,
   id: string,
   isAdopted: boolean,
+  isAdoptedByOther: boolean,
   isAdopting: boolean,
   isAttemptingToConnect: boolean,
   isConnected: boolean,
