@@ -59,7 +59,7 @@ export class ProtectApi {
   private username: string;
 
   // Initialize this instance with our login information.
-  constructor(debug: (message: string, ...parameters: unknown[]) => void, log: Logging, nvrAddress: string, username: string, password: string) {
+  constructor(debug: (message: string, ...parameters: unknown[]) => void, log: Logging, nvrAddress: string, username: string, password: string, public disableKeepAlive?: boolean) {
     this.apiErrorCount = 0;
     this.apiLastSuccess = 0;
     this.debug = debug;
@@ -93,7 +93,7 @@ export class ProtectApi {
         this.headers.set("X-CSRF-Token", csrfToken);
 
         // UniFi OS has support for keepalive. Let's take advantage of that and reduce the workload on controllers.
-        this.httpsAgent = new https.Agent({ keepAlive: true, maxFreeSockets: 5, maxSockets: 10, rejectUnauthorized: false, timeout: 60 * 1000 });
+        this.httpsAgent = new https.Agent({ keepAlive: !this.disableKeepAlive, maxFreeSockets: 5, maxSockets: 10, rejectUnauthorized: false, timeout: 60 * 1000 });
         return true;
       }
     }
@@ -108,9 +108,7 @@ export class ProtectApi {
 
     // Is it time to renew our credentials?
     if (now > (this.loginAge + (PROTECT_LOGIN_REFRESH_INTERVAL * 1000))) {
-      this.loggedIn = false;
-      this.headers = new Headers();
-      this.headers.set("Content-Type", "application/json");
+      this.clearLoginCredentials();
     }
 
     // If we're already logged in, and it's not time to renew our credentials, we're done.
@@ -120,6 +118,7 @@ export class ProtectApi {
 
     // Make sure we have a token, or get one if needed.
     if (!(await this.acquireToken())) {
+      this.clearLoginCredentials();
       return false;
     }
 
@@ -130,6 +129,7 @@ export class ProtectApi {
     });
 
     if (!response?.ok) {
+      this.clearLoginCredentials();
       return false;
     }
 
