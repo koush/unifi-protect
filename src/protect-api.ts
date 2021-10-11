@@ -24,6 +24,8 @@ import { Logging } from "./logging";
 import WebSocket from "ws";
 import util from "util";
 
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
 /*
  * The UniFi Protect API is largely undocumented and has been reverse engineered mostly through
  * the web interface, and trial and error.
@@ -49,7 +51,6 @@ export class ProtectApi {
   public eventListener!: WebSocket | null;
   public eventListenerConfigured!: boolean;
   private headers!: Headers;
-  private httpsAgent!: Agent;
   public isAdminUser!: boolean;
   private log: Logging;
   private loggedIn!: boolean;
@@ -91,9 +92,6 @@ export class ProtectApi {
       // We found a token.
       if (csrfToken) {
         this.headers.set("X-CSRF-Token", csrfToken);
-
-        // UniFi OS has support for keepalive. Let's take advantage of that and reduce the workload on controllers.
-        this.httpsAgent = new https.Agent({ keepAlive: !this.disableKeepAlive, maxFreeSockets: 5, maxSockets: 10, rejectUnauthorized: false, timeout: 60 * 1000 });
         return true;
       }
     }
@@ -592,12 +590,6 @@ export class ProtectApi {
     // Initialize the headers we need.
     this.headers = new Headers();
     this.headers.set("Content-Type", "application/json");
-
-    // We want the initial agent to be connection-agnostic, except for certificate validate since Protect uses self-signed certificates.
-    // and we want to disable TLS validation, at a minimum. We want to take advantage of the fact that it supports keepalives to reduce
-    // workloads, but we deal with that elsewhere in acquireToken.
-    this.httpsAgent?.destroy();
-    this.httpsAgent = new https.Agent({ rejectUnauthorized: false });
   }
 
   // Utility to let us streamline error handling and return checking from the Protect API.
@@ -620,7 +612,7 @@ export class ProtectApi {
       controller.abort();
     }, 1000 * PROTECT_API_TIMEOUT);
 
-    options.agent = this.httpsAgent;
+    options.agent = httpsAgent;
     options.headers = this.headers;
     options.signal = controller.signal;
 
