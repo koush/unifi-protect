@@ -9,8 +9,8 @@ export const PROTECT_API_ERROR_LIMIT = 10;
 // Interval, in seconds, to wait before trying to access the API again once we've hit the PROTECT_API_ERROR_LIMIT threshold.
 export const PROTECT_API_RETRY_INTERVAL = 300;
 
-// Protect API response timeout, in seconds. This should never be greater than 5 seconds.
-export const PROTECT_API_TIMEOUT = 3.5;
+// Protect API response timeout, in seconds.
+export const PROTECT_API_TIMEOUT = 15;
 
 // Heartbeat interval, in seconds, for the realtime Protect API on UniFI OS devices.
 // UniFi OS expects to hear from us every 15 seconds.
