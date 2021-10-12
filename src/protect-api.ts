@@ -58,6 +58,7 @@ export class ProtectApi {
   private nvrAddress: string;
   private password: string;
   private username: string;
+  private pendingLogin?: Promise<boolean>;
 
   // Initialize this instance with our login information.
   constructor(debug: (message: string, ...parameters: unknown[]) => void, log: Logging, nvrAddress: string, username: string, password: string, public disableKeepAlive?: boolean) {
@@ -101,7 +102,7 @@ export class ProtectApi {
   }
 
   // Log into UniFi Protect.
-  private async login(): Promise<boolean> {
+  private async loginWrapped(): Promise<boolean> {
     const now = Date.now();
 
     // Is it time to renew our credentials?
@@ -150,6 +151,18 @@ export class ProtectApi {
     this.clearLoginCredentials();
 
     return false;
+  }
+
+  private login(): Promise<boolean> {
+    // coalesce multiple requests into a single login attempt.
+    if (!this.pendingLogin) {
+      this.pendingLogin = this.loginWrapped();
+      this.pendingLogin.finally(() => this.pendingLogin = undefined);
+    }
+    else {
+      this.log.info('Login already pending, waiting for it to complete.');
+    }
+    return this.pendingLogin;
   }
 
   // Get our UniFi Protect NVR configuration.
