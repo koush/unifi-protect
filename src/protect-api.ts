@@ -159,9 +159,6 @@ export class ProtectApi {
       this.pendingLogin = this.loginWrapped();
       this.pendingLogin.finally(() => this.pendingLogin = undefined);
     }
-    else {
-      this.log.info('Login already pending, waiting for it to complete.');
-    }
     return this.pendingLogin;
   }
 
