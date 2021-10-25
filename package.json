@@ -1,6 +1,6 @@
 {
   "name": "unifi-protect",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Unifi Protect API",
   "scripts": {
     "build": "rimraf ./dist && tsc",
