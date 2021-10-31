@@ -17,8 +17,8 @@ import {
   ProtectNvrBootstrap,
   ProtectNvrUserConfig
 } from "./protect-types";
-import fetch, { AbortError, FetchError, Headers, RequestInfo, RequestInit, Response } from "node-fetch";
-import https, { Agent } from "https";
+import fetch, { FetchError, Headers, RequestInfo, RequestInit, Response } from "node-fetch";
+import https from "https";
 import { AbortController } from "abort-controller";
 import { Logging } from "./logging";
 import WebSocket from "ws";
@@ -690,9 +690,11 @@ export class ProtectApi {
 
       this.apiErrorCount++;
 
-      if (error instanceof AbortError) {
-        this.log.error("%s: Controller API connection terminated because it was taking too long. This error can usually be safely ignored.", this.getNvrName());
-        return null;
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          this.log.error("%s: Controller API connection terminated because it was taking too long. This error can usually be safely ignored.", this.getNvrName());
+          return null;
+        }
       }
 
       if (error instanceof FetchError) {
