@@ -1,5 +1,5 @@
 {
-  "name": "unifi-protect",
+  "name": "@koush/unifi-protect",
   "version": "0.0.5",
   "description": "Unifi Protect API",
   "scripts": {
