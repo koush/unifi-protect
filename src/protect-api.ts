@@ -545,6 +545,13 @@ export class ProtectApi {
     return "https://" + this.nvrAddress + "/proxy/protect/api/cameras";
   }
 
+  // Return the URL to request access to a websocket.
+  public wsUrl(): string {
+
+    // Boostrapping a UniFi OS device is done through: https://protect-nvr-ip/proxy/protect/api/ws/WEBSOCKET.
+    return "https://" + this.nvrAddress + "/proxy/protect/api/ws";
+  }
+
   // Return the right authentication URL, depending on which Protect NVR platform we are using.
   private authUrl(): string {
 
