@@ -137,6 +137,7 @@ export interface ProtectCameraConfigInterface {
     hasMic: boolean,
     hasMotionZones: boolean,
     hasNewMotionAlgorithm: boolean,
+    hasPackageCamera: boolean,
     hasPrivacyMask: boolean,
     hasRtc: boolean,
     hasSdCard: boolean,
