@@ -23,6 +23,7 @@ import { AbortController } from "abort-controller";
 import { Logging } from "./logging";
 import WebSocket from "ws";
 import util from "util";
+import { ProtectNvrUpdatePacket } from ".";
 
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
@@ -280,6 +281,25 @@ export class ProtectApi {
     }
 
     return true;
+  }
+
+  handleUpdatePacket(packet: ProtectNvrUpdatePacket): void {
+    if (packet.action?.modelKey !== "camera") {
+      return;
+    }
+    if (packet.action.action !== "update") {
+      return;
+    }
+    if (!packet.action.id) {
+      return;
+    }
+
+    const camera = this.Cameras?.find(c => c.id === packet.action.id);
+    if (!camera) {
+      return;
+    }
+
+    Object.assign(camera, packet.payload);
   }
 
   // Get the list of UniFi Protect devices associated with a NVR.

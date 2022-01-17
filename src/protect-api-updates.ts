@@ -105,7 +105,7 @@ enum UpdatePacketHeader {
 }
 
 // A complete description of the UniFi Protect realtime update events API packet format.
-type ProtectNvrUpdatePacket = {
+export type ProtectNvrUpdatePacket = {
   action: ProtectNvrUpdateEventAction,
   payload: Record<string, unknown> | string | Buffer
 }
