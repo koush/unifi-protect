@@ -1,6 +1,6 @@
 {
   "name": "@koush/unifi-protect",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Unifi Protect API",
   "scripts": {
     "build": "rimraf ./dist && tsc",
