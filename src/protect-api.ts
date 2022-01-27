@@ -28,8 +28,9 @@ import { AbortController } from "abort-controller";
 import WebSocket from "ws";
 import { protectLogging } from "./protect-logging";
 import util from "util";
+import { ProtectDoorLockConfig } from ".";
 
-type ProtectKnownDeviceTypes = ProtectCameraConfig | ProtectLightConfig | ProtectSensorConfig | ProtectViewerConfig;
+type ProtectKnownDeviceTypes = ProtectCameraConfig | ProtectLightConfig | ProtectSensorConfig | ProtectViewerConfig | ProtectDoorLockConfig;
 
 /*
  * The UniFi Protect API is largely undocumented and has been reverse engineered mostly through
@@ -68,6 +69,7 @@ export class ProtectApi {
   public sensors!: ProtectSensorConfig[] | undefined;
   private username: string;
   public viewers!: ProtectViewerConfig[] | undefined;
+  public doorlocks!: ProtectDoorLockConfig[] | undefined;
 
   // Initialize this instance with our login information.
   constructor(nvrAddress: string, username: string, password: string, log?: protectLogging) {
@@ -400,10 +402,12 @@ export class ProtectApi {
     //   - lights
     //   - sensors
     //   - viewers
+    //   - locks
     this.cameras = this.refreshDeviceClass(this.cameras, this.bootstrap?.cameras) as ProtectCameraConfig[];
     this.lights = this.refreshDeviceClass(this.lights, this.bootstrap?.lights) as ProtectLightConfig[];
     this.sensors = this.refreshDeviceClass(this.sensors, this.bootstrap?.sensors) as ProtectSensorConfig[];
     this.viewers = this.refreshDeviceClass(this.viewers, this.bootstrap?.viewers) as ProtectViewerConfig[];
+    this.doorlocks = this.refreshDeviceClass(this.doorlocks, this.bootstrap?.doorlocks) as ProtectDoorLockConfig[];
 
     return true;
   }
@@ -683,6 +687,13 @@ export class ProtectApi {
 
     // Boostrapping a UniFi OS device is done through: https://protect-nvr-ip/proxy/protect/api/lights/LIGHTID.
     return "https://" + this.nvrAddress + "/proxy/protect/api/lights";
+  }
+
+  // Return the URL to directly access lights.
+  public doorlocksUrl(): string {
+
+    // Boostrapping a UniFi OS device is done through: https://protect-nvr-ip/proxy/protect/api/doorlocks/DOORLOCKID.
+    return "https://" + this.nvrAddress + "/proxy/protect/api/doorlocks";
   }
 
   // Return the URL to directly access viewers.

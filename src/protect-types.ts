@@ -17,7 +17,8 @@ export interface ProtectNvrBootstrapInterface {
   nvr: ProtectNvrConfig,
   sensors: ProtectSensorConfig[],
   users: ProtectNvrUserConfig[],
-  viewers: ProtectViewerConfig[]
+  viewers: ProtectViewerConfig[],
+  doorlocks: ProtectDoorLockConfig[],
 }
 
 // A semi-complete description of the UniFi Protect NVR configuration JSON.
@@ -467,7 +468,7 @@ export interface ProtectLightConfigInterface {
   }
 }
 
-export interface ProtectLockConfigInterface {
+export interface ProtectDoorLockConfigInterface {
   mac: string;
   host: null;
   connectionHost: string;
@@ -787,3 +788,4 @@ export type ProtectSensorConfig = Readonly<ProtectSensorConfigInterface>;
 export type ProtectSensorConfigPayload = DeepPartial<ProtectSensorConfigInterface>;
 export type ProtectViewerConfig = Readonly<ProtectViewerConfigInterface>;
 export type ProtectViewerConfigPayload = DeepPartial<ProtectViewerConfigInterface>;
+export type ProtectDoorLockConfig = Readonly<ProtectDoorLockConfigInterface>;
