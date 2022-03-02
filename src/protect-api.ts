@@ -22,7 +22,7 @@ import {
   ProtectViewerConfig,
   ProtectViewerConfigPayload
 } from "./protect-types";
-import fetch, { AbortError, FetchError, Headers, RequestInfo, RequestInit, Response } from "node-fetch-cjs";
+import fetch, { AbortError, FetchError, Headers, RequestInfo, RequestInit, Response } from "node-fetch";
 import https, { Agent } from "https";
 import { AbortController } from "abort-controller";
 import { ProtectLogging } from "./protect-logging";

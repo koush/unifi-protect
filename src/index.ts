@@ -8,4 +8,4 @@ export * from "./protect-api-livestream";
 export * from "./protect-api-updates";
 export * from "./protect-logging";
 export * from "./protect-types";
-export { FetchError } from "node-fetch-cjs";
+export { FetchError } from "node-fetch";
