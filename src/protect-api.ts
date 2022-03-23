@@ -195,6 +195,11 @@ export class ProtectApi {
       this.headers.set("Cookie", cookie);
       this.headers.set("X-CSRF-Token", csrfToken);
 
+      // Refresh the configuration from the NVR.
+      if(!(await this.bootstrapProtect())) {
+        return false;
+      }
+
       return true;
     }
 
@@ -219,11 +224,6 @@ export class ProtectApi {
 
   // Get our UniFi Protect NVR configuration.
   private async bootstrapProtect(): Promise<boolean> {
-
-    // Log us in if needed.
-    if(!(await this.login())) {
-      return false;
-    }
 
     const response = await this.fetch(this.bootstrapUrl(), { method: "GET" });
 
@@ -281,11 +281,6 @@ export class ProtectApi {
 
   // Connect to the realtime update events API.
   private async launchUpdatesListener(): Promise<boolean> {
-
-    // Log us in if needed.
-    if(!(await this.login())) {
-      return false;
-    }
 
     // If we already have a listener, we're already all set.
     if(this.eventsWs) {
@@ -389,8 +384,8 @@ export class ProtectApi {
   // Get the list of UniFi Protect devices associated with a NVR.
   public async refreshDevices(): Promise<boolean> {
 
-    // Refresh the configuration from the NVR.
-    if(!(await this.bootstrapProtect())) {
+    // Log us in if needed.
+    if(!(await this.login())) {
       return false;
     }
 
@@ -568,7 +563,7 @@ export class ProtectApi {
     });
 
     if(!response?.ok) {
-      this.log.debug("%s: Unable to configure the light: %s.", this.getFullName(device), response?.status);
+      this.log.error("%s: Unable to configure the light: %s.", this.getFullName(device), response?.status);
       return null;
     }
 
