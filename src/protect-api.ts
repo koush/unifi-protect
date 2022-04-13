@@ -323,6 +323,11 @@ export class ProtectApi {
         this._eventsWs = null;
       });
 
+      ws.once("close", () => {
+        ws.terminate();
+        this._eventsWs = null;
+      });
+
       // Make the websocket available, and then we're done.
       this._eventsWs = ws;
 
