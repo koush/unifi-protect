@@ -281,7 +281,7 @@ export class ProtectApi {
   }
 
   // Connect to the realtime update events API.
-  private async launchUpdatesListener(): Promise<boolean> {
+  private launchUpdatesListener(): boolean {
 
     // If we already have a listener, we're already all set.
     if(this.eventsWs) {
