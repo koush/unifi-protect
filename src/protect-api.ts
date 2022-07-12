@@ -13,11 +13,11 @@ import {
   ProtectCameraConfig,
   ProtectCameraConfigInterface,
   ProtectCameraConfigPayload,
+  ProtectDoorLockConfig,
   ProtectLightConfig,
   ProtectLightConfigPayload,
   ProtectNvrBootstrap,
   ProtectNvrUserConfig,
-  ProtectDoorLockConfig,
   ProtectSensorConfig,
   ProtectViewerConfig,
   ProtectViewerConfigPayload
