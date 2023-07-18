@@ -204,6 +204,7 @@ export interface ProtectCameraConfigInterface {
     hasSmartDetect: boolean,
     hasSpeaker: boolean,
     hasWifi: boolean,
+    isDoorbell: boolean,
     motionAlgorithms: string[],
     privacyMaskCapability: {
       maxMasks: number,
