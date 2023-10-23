@@ -137,7 +137,8 @@ export class ProtectApi {
     }
 
     // Couldn't deduce what type of NVR device we were connecting to.
-    return false;
+    // 3.2.5 no longer returns X-CSRF-Token, so this should no longer return be required or false.
+    return true;
   }
 
   // Login to the UniFi Protect API.
@@ -190,7 +191,7 @@ export class ProtectApi {
     const csrfToken = response.headers.get("X-CSRF-Token");
     const cookie = response.headers.get("Set-Cookie");
 
-    if(csrfToken && cookie && this.headers.has("X-CSRF-Token")) {
+    if(csrfToken && cookie) {
 
       this.headers.set("Cookie", cookie);
       this.headers.set("X-CSRF-Token", csrfToken);
