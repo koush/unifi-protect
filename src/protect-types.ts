@@ -716,6 +716,7 @@ export interface ProtectSensorConfigInterface {
     lowThreshold: number,
     margin: number
   },
+  host: string,
   type: string,
   upSince: number,
   uptime: number,
