@@ -940,6 +940,13 @@ export class ProtectApi {
         return null;
       }
 
+      // Too many requests.
+      if(response.status === 429) {
+        this.apiErrorCount = PROTECT_API_ERROR_LIMIT;
+        this.log.error("Too many requests. Will wait a while before next request. This can take a while to resolve, please make sure the Protect IP and credentials supplied are correct with suitable permissions.");
+        return null;
+      }
+
       // Some other unknown error occurred.
       if(!response.ok) {
         this.apiErrorCount++;
